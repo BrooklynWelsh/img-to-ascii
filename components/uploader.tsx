@@ -43,13 +43,11 @@ export default function Uploader() {
                 const ctx: CanvasRenderingContext2D = canvas.getContext('2d') as CanvasRenderingContext2D
                 ctx.drawImage(img, 0, 0, img.width, img.height, 0, 0, canvas.width, canvas.height)
                 const imageData = ctx.getImageData(0, 0, img.width, img.height)
-                // console.log('image data')
-                // console.log(imageData)
 
-                console.log(canvas)
                 // Step through image data 4 spots at a time to edit each r,g,b,a set
                 const webWorker = new Worker(new URL('./convert-image.ts', import.meta.url))
-                webWorker.postMessage({imageData, cellSize: 5})
+                const resolutionSlider = document.getElementById('resolution')! as HTMLInputElement
+                webWorker.postMessage({imageData, cellSize: parseInt(resolutionSlider.value)})
                 console.log('started worker')
 
                 webWorker.onmessage = function(e) {

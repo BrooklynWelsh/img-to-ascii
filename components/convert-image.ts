@@ -10,14 +10,17 @@ class Cell {
   y
   symbol
   color
-  constructor(x: number, y: number, symbol: string, color: string) {
+  fontSize
+  constructor(x: number, y: number, symbol: string, color: string, fontSize: number) {
     this.x = x
     this.y = y
     this.symbol = symbol
     this.color = color
+    this.fontSize = fontSize
   }
 
   draw (ctx: CanvasRenderingContext2D) {
+    ctx.font = `${this.fontSize}px Verdana`
     ctx.fillStyle = this.color
     ctx.fillText(this.symbol, this.x, this.y)
   }
@@ -52,7 +55,7 @@ self.addEventListener('message', function(e) {
         const averageColorValue = total/3
         const color = `rgb(${red}, ${green}, ${blue})`
         const symbol = convertToChar(averageColorValue)
-        if (total > 200) newImageArray.push(new Cell(x, y, symbol, color)) // Exclude very dark/dim colors with if statement
+        if (total > 200) newImageArray.push(new Cell(x, y, symbol, color, cellSize)) // Exclude very dark/dim colors with if statement
       }
     }
   }
