@@ -34,11 +34,11 @@ self.addEventListener('message', function(e) {
   const imageWidth = e.data.imageData.width
   const imageHeight = e.data.imageData.height
   const imageData = e.data.imageData.data
+  const canvas = e.data.canvas
+  const ctx = canvas.getContext('2d')
   const cellSize = e.data.cellSize
-  const canvas: OffscreenCanvas = new OffscreenCanvas(imageWidth, imageHeight)
   console.log(canvas)
   console.log(canvas.width)
-  const ctx = canvas.getContext('2d') as OffscreenCanvasRenderingContext2D
 
   const newImageArray = []
   for (let y = 0; y < imageHeight; y += cellSize) {
@@ -62,8 +62,8 @@ self.addEventListener('message', function(e) {
   console.log(newImageArray)
   console.log('finished')
   drawAscii(ctx, newImageArray)
-  const ascii = canvas.transferToImageBitmap()
-  this.postMessage({ascii}, [ascii])
+  // const ascii = canvas.transferToImageBitmap()
+  // this.postMessage({ascii}, [ascii])
 }, false)
 
 function drawAscii(ctx: CanvasRenderingContext2D, newImageArray: Cell[]) {

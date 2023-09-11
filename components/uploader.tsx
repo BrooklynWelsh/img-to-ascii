@@ -27,6 +27,7 @@ export default function Uploader() {
           const reader = new FileReader()
           reader.onload = (e) => {
             const canvas: HTMLCanvasElement = document.getElementById('canvas') as HTMLCanvasElement
+            const memCanvas = document.createElement('canvas')
             if (canvas) {
               const imageArray = new Uint8Array(reader.result as ArrayBuffer)
               const imageHeader = imageArray.subarray(0,4)
@@ -40,29 +41,21 @@ export default function Uploader() {
               const blob = new Blob([reader.result as ArrayBuffer])
               img.src = URL.createObjectURL(blob)
               img.onload = function () {
-                const ctx: CanvasRenderingContext2D = canvas.getContext('2d') as CanvasRenderingContext2D
-                ctx.drawImage(img, 0, 0, img.width, img.height, 0, 0, canvas.width, canvas.height)
+                const ctx: CanvasRenderingContext2D = memCanvas.getContext('2d') as CanvasRenderingContext2D
+                memCanvas.width = img.width
+                memCanvas.height = img.height
+                ctx.drawImage(img, 0, 0, img.width, img.height, 0, 0, memCanvas.width, memCanvas.height)
                 const imageData = ctx.getImageData(0, 0, img.width, img.height)
 
                 // Step through image data 4 spots at a time to edit each r,g,b,a set
                 const webWorker = new Worker(new URL('./convert-image.ts', import.meta.url))
                 const resolutionSlider = document.getElementById('resolution')! as HTMLInputElement
-                webWorker.postMessage({imageData, cellSize: parseInt(resolutionSlider.value)})
+                const offscreen = canvas.transferControlToOffscreen()
+                webWorker.postMessage({canvas: offscreen, imageData, cellSize: parseInt(resolutionSlider.value)}, [offscreen])
                 console.log('started worker')
 
                 webWorker.onmessage = function(e) {
-                  const ascii = e.data.ascii as ImageBitmap
-                  canvas.width = img.width
-                  canvas.height = img.height
-                  canvas.remove()
-                  const bmpCanvas = document.getElementById('bmp-canvas') as HTMLCanvasElement
-                  bmpCanvas.width = img.width
-                  bmpCanvas.height = img.height
-                  bmpCanvas.classList.add('w-full')
-                  bmpCanvas.classList.add('h-full')
-                  bmpCanvas.classList.remove('hidden')
-                  const bmpCtx = bmpCanvas.getContext('bitmaprenderer')!
-                  bmpCtx.transferFromImageBitmap(ascii)
+
                 }
               }
               
@@ -235,7 +228,6 @@ export default function Uploader() {
             <span className="sr-only">Photo upload</span>
           </div>
           <canvas id="canvas" className="w-full h-full"/>
-          <canvas id="bmp-canvas" className='hidden'/>
         </label>
         <div className="mt-1 flex rounded-md shadow-sm">
           <input
