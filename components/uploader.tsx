@@ -27,6 +27,7 @@ export default function Uploader() {
           const reader = new FileReader()
           reader.onload = (e) => {
             const canvas: HTMLCanvasElement = document.getElementById('canvas') as HTMLCanvasElement
+            const onscreenCtx = canvas.getContext('2d')!
             const memCanvas = document.createElement('canvas')
             if (canvas) {
               const imageArray = new Uint8Array(reader.result as ArrayBuffer)
@@ -46,18 +47,26 @@ export default function Uploader() {
                 memCanvas.height = img.height
                 ctx.drawImage(img, 0, 0, img.width, img.height, 0, 0, memCanvas.width, memCanvas.height)
                 const imageData = ctx.getImageData(0, 0, img.width, img.height)
-                canvas.height = imageData.height
-                canvas.width = imageData.width
+                const canvasParent = canvas.parentElement?.getBoundingClientRect()!
+                canvas.height = canvasParent.height
+                canvas.width = canvasParent.width
                 // Step through image data 4 spots at a time to edit each r,g,b,a set
                 const webWorker = new Worker(new URL('./convert-image.ts', import.meta.url))
                 const resolutionSlider = document.getElementById('resolution')! as HTMLInputElement
-                const offscreen = canvas.transferControlToOffscreen()
-                webWorker.postMessage({canvas: offscreen, imageData, cellSize: parseInt(resolutionSlider.value)}, [offscreen])
+                webWorker.postMessage({imageData, cellSize: parseInt(resolutionSlider.value)})
                 console.log('started worker')
 
                 webWorker.onmessage = function(e) {
-                  const blobUrl = e.data
-                  window.location.assign(blobUrl)
+                  const blobUrl = e.data.blobUrl
+                  const asciiImageData = e.data.asciiImageData
+                  
+                  // Now draw to preview canvas
+                  createImageBitmap(asciiImageData)
+                    .then((asciiBitmap) => {
+                      onscreenCtx.drawImage(asciiBitmap, 0, 0, canvas.width, canvas.height)
+                      console.log('draw done')
+                    })
+                  
                 }
               }
               
@@ -81,7 +90,7 @@ export default function Uploader() {
 
   return (
     <form
-      className="grid gap-6"
+      className="grid gap-2 h-[100%]"
       onSubmit={async (e) => {
         e.preventDefault()
         setSaving(true)
@@ -143,7 +152,7 @@ export default function Uploader() {
         })
       }}
     >
-      <div>
+      <div className="h-[80%]">
         <div className="space-y-1 mb-4">
           <h2 className="text-xl font-semibold">Upload a file</h2>
           <p className="text-sm text-gray-500">
@@ -152,10 +161,10 @@ export default function Uploader() {
         </div>
         <label
           htmlFor="image-upload"
-          className="group relative mt-2 flex h-72 cursor-pointer flex-col items-center justify-center rounded-md border border-gray-300 bg-white shadow-sm transition-all hover:bg-gray-50"
+          className="group relative mt-2 flex h-[90%] w-full cursor-pointer flex-col items-center justify-center rounded-md border border-gray-300 bg-white shadow-sm transition-all hover:bg-gray-50"
         >
           <div
-            className="absolute z-[5] h-full w-full rounded-md"
+            className="absolute z-[5] max-h-[80%] w-full rounded-md"
             onDragOver={(e) => {
               e.preventDefault()
               e.stopPropagation()
@@ -229,7 +238,7 @@ export default function Uploader() {
             </p>
             <span className="sr-only">Photo upload</span>
           </div>
-          <canvas id="canvas" className="w-full h-full"/>
+          <canvas id="canvas" className="w-[100%] max-h-[80%]"/>
         </label>
         <div className="mt-1 flex rounded-md shadow-sm">
           <input

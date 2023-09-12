@@ -19,7 +19,7 @@ class Cell {
     this.fontSize = fontSize
   }
 
-  draw (ctx: CanvasRenderingContext2D) {
+  draw (ctx: OffscreenCanvasRenderingContext2D) {
     ctx.font = `${this.fontSize}px Verdana`
     ctx.fillStyle = this.color
     ctx.fillText(this.symbol, this.x, this.y)
@@ -34,8 +34,8 @@ self.addEventListener('message', function(e) {
   const imageWidth = e.data.imageData.width
   const imageHeight = e.data.imageData.height
   const imageData = e.data.imageData.data
-  const canvas: OffscreenCanvas = e.data.canvas
-  const ctx = canvas.getContext('2d')
+  const canvas: OffscreenCanvas = new OffscreenCanvas(imageWidth, imageHeight)
+  const ctx = canvas.getContext('2d')! as OffscreenCanvasRenderingContext2D
   const cellSize = e.data.cellSize
   console.log(canvas)
   console.log(canvas.width)
@@ -62,16 +62,17 @@ self.addEventListener('message', function(e) {
   console.log(newImageArray)
   console.log('finished')
   drawAscii(ctx, newImageArray)
+  const asciiImageData = ctx.getImageData(0, 0, imageWidth, imageHeight)
   canvas.convertToBlob().then((blob: Blob) => { 
     console.log(blob)
     const blobUrl = URL.createObjectURL(blob)
-    this.postMessage(blobUrl)
+    this.postMessage({blobUrl, asciiImageData})
   })
   // const ascii = canvas.transferToImageBitmap()
   // this.postMessage({ascii}, [ascii])
 }, false)
 
-function drawAscii(ctx: CanvasRenderingContext2D, newImageArray: Cell[]) {
+function drawAscii(ctx: OffscreenCanvasRenderingContext2D, newImageArray: Cell[]) {
   for (const cell of newImageArray) {
     cell.draw(ctx)
   }
