@@ -46,7 +46,8 @@ export default function Uploader() {
                 memCanvas.height = img.height
                 ctx.drawImage(img, 0, 0, img.width, img.height, 0, 0, memCanvas.width, memCanvas.height)
                 const imageData = ctx.getImageData(0, 0, img.width, img.height)
-
+                canvas.height = imageData.height
+                canvas.width = imageData.width
                 // Step through image data 4 spots at a time to edit each r,g,b,a set
                 const webWorker = new Worker(new URL('./convert-image.ts', import.meta.url))
                 const resolutionSlider = document.getElementById('resolution')! as HTMLInputElement
@@ -55,7 +56,8 @@ export default function Uploader() {
                 console.log('started worker')
 
                 webWorker.onmessage = function(e) {
-
+                  const blobUrl = e.data
+                  window.location.assign(blobUrl)
                 }
               }
               

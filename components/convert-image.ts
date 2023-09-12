@@ -34,7 +34,7 @@ self.addEventListener('message', function(e) {
   const imageWidth = e.data.imageData.width
   const imageHeight = e.data.imageData.height
   const imageData = e.data.imageData.data
-  const canvas = e.data.canvas
+  const canvas: OffscreenCanvas = e.data.canvas
   const ctx = canvas.getContext('2d')
   const cellSize = e.data.cellSize
   console.log(canvas)
@@ -62,6 +62,11 @@ self.addEventListener('message', function(e) {
   console.log(newImageArray)
   console.log('finished')
   drawAscii(ctx, newImageArray)
+  canvas.convertToBlob().then((blob: Blob) => { 
+    console.log(blob)
+    const blobUrl = URL.createObjectURL(blob)
+    this.postMessage(blobUrl)
+  })
   // const ascii = canvas.transferToImageBitmap()
   // this.postMessage({ascii}, [ascii])
 }, false)
