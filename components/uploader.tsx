@@ -4,7 +4,6 @@ import { useState, useCallback, useMemo, ChangeEvent } from 'react'
 import toast from 'react-hot-toast'
 import {red, green, blue, charWidth} from './Sliders'
 import LoadingDots from './loading-dots'
-import { BlobResult } from '@vercel/blob'
 
 export default function Uploader() {
   const [data, setData] = useState<{
@@ -16,8 +15,12 @@ export default function Uploader() {
 
   const [dragActive, setDragActive] = useState(false)
 
+  const [saving, setSaving] = useState(false)
+  const [fileLink, setLink] = useState(undefined)
+
   const onChangePicture = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
+      setSaving(true)
       const file = event.currentTarget.files && event.currentTarget.files[0]
       if (file) {
         if (file.size / 1024 / 1024 > 50) {
@@ -57,6 +60,8 @@ export default function Uploader() {
 
                 webWorker.onmessage = function(e) {
                   const blobUrl = e.data.blobUrl
+                  console.log(blobUrl)
+                  const downloadButton = document.getElementById('download')
                   const asciiImageData = e.data.asciiImageData
                   
                   // Now draw to preview canvas
@@ -66,8 +71,9 @@ export default function Uploader() {
                       canvas.width = asciiBitmap.width
                       onscreenCtx.drawImage(asciiBitmap, 0, 0, canvas.width, canvas.height)
                       console.log('draw done')
+                      setLink(blobUrl)
+                      setSaving(false)
                     })
-                  
                 }
               }
               
@@ -83,87 +89,23 @@ export default function Uploader() {
     [setData]
   )
 
-  const [saving, setSaving] = useState(false)
-
   const saveDisabled = useMemo(() => {
     return !data.image || saving
   }, [data.image, saving])
 
   return (
     <>
-    <h1 className="pt-4 pb-8 bg-gradient-to-br from-black via-[#171717] to-[#575757] bg-clip-text text-center text-4xl font-medium tracking-tight text-transparent md:text-7xl">
-      Convert your image to ASCII art.
-    </h1>
     <form
-      className="grid gap-2 h-screen"
+      className="grid gap-24 h-[100%]"
+      method='GET'
+      target="_blank"
+      action={fileLink}
       onSubmit={async (e) => {
-        e.preventDefault()
-        setSaving(true)
-        fetch('/api/upload', {
-          method: 'POST',
-          headers: { 'content-type': file?.type || 'application/octet-stream' },
-          body: file,
-        }).then(async (res) => {
-          if (res.status === 200) {
-            const { url } = (await res.json()) as BlobResult
-            toast(
-              (t) => (
-                <div className="relative">
-                  <div className="p-2">
-                    <p className="font-semibold text-gray-900">
-                      File uploaded!
-                    </p>
-                    <p className="mt-1 text-sm text-gray-500">
-                      Your file has been uploaded to{' '}
-                      <a
-                        className="font-medium text-gray-900 underline"
-                        href={url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {url}
-                      </a>
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => toast.dismiss(t.id)}
-                    className="absolute top-0 -right-2 inline-flex text-gray-400 focus:outline-none focus:text-gray-500 rounded-full p-1.5 hover:bg-gray-100 transition ease-in-out duration-150"
-                  >
-                    <svg
-                      className="h-5 w-5"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M5.293 5.293a1 1 0 011.414 0L10
-                          8.586l3.293-3.293a1 1 0 111.414 1.414L11.414
-                          10l3.293 3.293a1 1 0 01-1.414 1.414L10
-                          11.414l-3.293 3.293a1 1 0 01-1.414-1.414L8.586
-                          10 5.293 6.707a1 1 0 010-1.414z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </button>
-                </div>
-              ),
-              { duration: 300000 }
-            )
-          } else {
-            const error = await res.text()
-            toast.error(error)
-          }
-          setSaving(false)
-        })
+        window.open(fileLink)
+        setSaving(false)
       }}
     >
       <div className="h-[70vh] text-center">
-        <div className="space-y-1 mb-4">
-          <h2 className="text-xl font-semibold">Upload a file</h2>
-          <p className="text-sm text-gray-500">
-            Accepted formats: .png, .jpg
-          </p>
-        </div>
         <label
           htmlFor="image-upload"
           className="group relative mt-2 flex w-full max-h-[100%] h-[100%] cursor-pointer flex-col items-center justify-center rounded-md border border-gray-300 bg-white shadow-sm transition-all hover:bg-gray-50"
@@ -236,7 +178,7 @@ export default function Uploader() {
               <path d="m16 16-4-4-4 4"></path>
             </svg>
             <p className="mt-2 text-center text-sm text-gray-500">
-              Drag and drop or click to upload.
+              Click to upload.
             </p>
             <p className="mt-2 text-center text-sm text-gray-500">
               Max file size: 50MB
@@ -268,7 +210,7 @@ export default function Uploader() {
         {saving ? (
           <LoadingDots color="#808080" />
         ) : (
-          <p className="text-sm">Confirm upload</p>
+          <p className="text-sm">View/Download full image</p>
         )}
       </button>
     </form>
