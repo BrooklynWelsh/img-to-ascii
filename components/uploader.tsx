@@ -48,8 +48,7 @@ export default function Uploader() {
                 ctx.drawImage(img, 0, 0, img.width, img.height, 0, 0, memCanvas.width, memCanvas.height)
                 const imageData = ctx.getImageData(0, 0, img.width, img.height)
                 const canvasParent = canvas.parentElement?.getBoundingClientRect()!
-                canvas.height = canvasParent.height
-                canvas.width = canvasParent.width
+                
                 // Step through image data 4 spots at a time to edit each r,g,b,a set
                 const webWorker = new Worker(new URL('./convert-image.ts', import.meta.url))
                 const resolutionSlider = document.getElementById('resolution')! as HTMLInputElement
@@ -63,6 +62,8 @@ export default function Uploader() {
                   // Now draw to preview canvas
                   createImageBitmap(asciiImageData)
                     .then((asciiBitmap) => {
+                      canvas.height = asciiBitmap.height
+                      canvas.width = asciiBitmap.width
                       onscreenCtx.drawImage(asciiBitmap, 0, 0, canvas.width, canvas.height)
                       console.log('draw done')
                     })
@@ -90,7 +91,7 @@ export default function Uploader() {
 
   return (
     <form
-      className="grid gap-2 h-[100%]"
+      className="grid gap-2 h-screen"
       onSubmit={async (e) => {
         e.preventDefault()
         setSaving(true)
@@ -152,7 +153,7 @@ export default function Uploader() {
         })
       }}
     >
-      <div className="h-[80%]">
+      <div className="h-[70vh]">
         <div className="space-y-1 mb-4">
           <h2 className="text-xl font-semibold">Upload a file</h2>
           <p className="text-sm text-gray-500">
@@ -161,10 +162,10 @@ export default function Uploader() {
         </div>
         <label
           htmlFor="image-upload"
-          className="group relative mt-2 flex h-[90%] w-full cursor-pointer flex-col items-center justify-center rounded-md border border-gray-300 bg-white shadow-sm transition-all hover:bg-gray-50"
+          className="group relative mt-2 flex w-full max-h-[100%] h-[100%] cursor-pointer flex-col items-center justify-center rounded-md border border-gray-300 bg-white shadow-sm transition-all hover:bg-gray-50"
         >
           <div
-            className="absolute z-[5] max-h-[80%] w-full rounded-md"
+            className="absolute z-[5] h-full w-full rounded-md"
             onDragOver={(e) => {
               e.preventDefault()
               e.stopPropagation()
@@ -238,7 +239,7 @@ export default function Uploader() {
             </p>
             <span className="sr-only">Photo upload</span>
           </div>
-          <canvas id="canvas" className="w-[100%] max-h-[80%]"/>
+          <canvas id="canvas" className="max-w-[100%] max-h-[100%]"/>
         </label>
         <div className="mt-1 flex rounded-md shadow-sm">
           <input
