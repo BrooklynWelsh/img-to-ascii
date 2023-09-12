@@ -20,7 +20,12 @@ class Cell {
   }
 
   draw (ctx: OffscreenCanvasRenderingContext2D) {
-    ctx.font = `${this.fontSize}px Verdana`
+    // Shadows apparently cause long processing times in Firefox, so draw same font twice, but slightly offset to fake a shadow on each character
+    ctx.font = `${this.fontSize * 1.2}px Verdana`
+
+    // TODO: When dark mode is added, detect what color shadow to use
+    ctx.fillStyle = 'black'
+    ctx.fillText(this.symbol, this.x + 0.5, this.y + 0.5)
     ctx.fillStyle = this.color
     ctx.fillText(this.symbol, this.x, this.y)
   }
