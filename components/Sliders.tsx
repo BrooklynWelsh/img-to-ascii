@@ -21,7 +21,9 @@ export default function Sliders() {
     }
 
     return (
-        <section>
+        <section className="w-80 flex flex-col justify-center text-center">
+            <h2 className="text-2xl md:text-3xl mb-4">Image Controls</h2>
+            <hr className="block border-black"/>
             <label htmlFor='resolution' id='resolutionLabel'>Resolution: {currentRes}</label>
             <input onChange={(e) => handleResChange(e)} type="range" id='resolution' name='resolution' min='1' max='25' defaultValue='5' />
         </section>

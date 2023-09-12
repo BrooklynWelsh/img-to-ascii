@@ -90,6 +90,10 @@ export default function Uploader() {
   }, [data.image, saving])
 
   return (
+    <>
+    <h1 className="pt-4 pb-8 bg-gradient-to-br from-black via-[#171717] to-[#575757] bg-clip-text text-center text-4xl font-medium tracking-tight text-transparent md:text-7xl">
+      Convert your image to ASCII art.
+    </h1>
     <form
       className="grid gap-2 h-screen"
       onSubmit={async (e) => {
@@ -153,7 +157,7 @@ export default function Uploader() {
         })
       }}
     >
-      <div className="h-[70vh]">
+      <div className="h-[70vh] text-center">
         <div className="space-y-1 mb-4">
           <h2 className="text-xl font-semibold">Upload a file</h2>
           <p className="text-sm text-gray-500">
@@ -268,5 +272,6 @@ export default function Uploader() {
         )}
       </button>
     </form>
+    </>
   )
 }
