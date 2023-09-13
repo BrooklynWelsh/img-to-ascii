@@ -2,9 +2,10 @@
 
 import { useState, useCallback, useMemo, ChangeEvent } from 'react'
 import toast from 'react-hot-toast'
+import LoadingDots from './loading-dots'
 import {red, green, blue, charWidth} from './Sliders'
 
-export default function Uploader({saving, fileLink, disableButton, updateFileLink}: {saving: boolean, fileLink: string, disableButton: Function, updateFileLink: Function}) {
+export default function Uploader({saving, fileLink, disableButton, updateFileLink}: {saving: boolean, fileLink: string | undefined, disableButton: Function, updateFileLink: Function}) {
   const [data, setData] = useState<{
     image: string | null
   }>({
@@ -143,39 +144,58 @@ export default function Uploader({saving, fileLink, disableButton, updateFileLin
               }
             }}
           />
-          <div
+
+          {/* If in the middle of processing, display loading dots, else display either the 'click to upload' prompt if no image, or the actual image */}
+          {
+            saving ? 
+            <div
             className={`${
               dragActive ? 'border-2 border-black' : ''
-            } absolute z-[3] flex h-full w-full flex-col items-center justify-center rounded-md px-10 transition-all 
-                'bg-white opacity-100 hover:bg-gray-50'
-            `}
-          >
-            <svg
-              className={`${
-                dragActive ? 'scale-110' : 'scale-100'
-              } h-7 w-7 text-gray-500 transition-all duration-75 group-hover:scale-110 group-active:scale-95`}
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"></path>
-              <path d="M12 12v9"></path>
-              <path d="m16 16-4-4-4 4"></path>
-            </svg>
-            <p className="mt-2 text-center text-sm text-gray-500">
-              Click to upload.
-            </p>
-            <p className="mt-2 text-center text-sm text-gray-500">
-              Max file size: 50MB
-            </p>
-            <span className="sr-only">Photo upload</span>
-          </div>
+            } absolute z-[3] flex h-full w-full flex-col items-center justify-center rounded-md px-10 transition-all ${
+              fileLink
+                ? 'bg-white/80 opacity-0 hover:opacity-100 hover:backdrop-blur-md'
+                : 'bg-white opacity-100 hover:bg-gray-50'
+            }`}
+            > 
+            <LoadingDots/> 
+            </div> : 
+            <div
+                className={`${
+                  dragActive ? 'border-2 border-black' : ''
+                } absolute z-[3] flex h-full w-full flex-col items-center justify-center rounded-md px-10 transition-all ${
+                  fileLink
+                    ? 'bg-white/80 opacity-0 hover:opacity-100 hover:backdrop-blur-md'
+                    : 'bg-white opacity-100 hover:bg-gray-50'
+                }`}
+              >
+                <svg
+                  className={`${
+                    dragActive ? 'scale-110' : 'scale-100'
+                  } h-7 w-7 text-gray-500 transition-all duration-75 group-hover:scale-110 group-active:scale-95`}
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"></path>
+                  <path d="M12 12v9"></path>
+                  <path d="m16 16-4-4-4 4"></path>
+                </svg>
+                <p className="mt-2 text-center text-sm text-gray-500">
+                  Click to upload.
+                </p>
+                <p className="mt-2 text-center text-sm text-gray-500">
+                  Max file size: 50MB
+                </p>
+                <span className="sr-only">Photo upload</span>
+              </div> 
+          }
+          
           <canvas id="canvas" className="max-w-[100%] max-h-[100%]"/>
         </label>
         <div className="mt-1 flex rounded-md shadow-sm">
