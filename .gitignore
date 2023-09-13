@@ -29,8 +29,5 @@ yarn-error.log*
 .env
 .env*.local
 
-# Turborepo
-.turbo
-
 # typescript
 *.tsbuildinfo
