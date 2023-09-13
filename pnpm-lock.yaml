@@ -14,9 +14,6 @@ dependencies:
   '@types/react-dom':
     specifier: 18.0.11
     version: 18.0.11
-  '@vercel/blob':
-    specifier: ^0.8.3
-    version: 0.8.3
   autoprefixer:
     specifier: 10.4.14
     version: 10.4.14(postcss@8.4.22)
@@ -390,13 +387,6 @@ packages:
     dependencies:
       '@typescript-eslint/types': 5.59.2
       eslint-visitor-keys: 3.4.0
-    dev: false
-
-  /@vercel/blob@0.8.3:
-    resolution: {integrity: sha512-lbnlO0USopJQS5in1F08S57ttk/DSCeE3JOE39WFXh9BBlwcDdhanfkz6sUi1JhkNe1fzwaQ1zYwd0v03mnpqg==}
-    engines: {node: '>=16.14'}
-    dependencies:
-      undici: 5.22.0
     dev: false
 
   /acorn-jsx@5.3.2(acorn@8.8.2):
@@ -2767,13 +2757,6 @@ packages:
       has-bigints: 1.0.2
       has-symbols: 1.0.3
       which-boxed-primitive: 1.0.2
-    dev: false
-
-  /undici@5.22.0:
-    resolution: {integrity: sha512-fR9RXCc+6Dxav4P9VV/sp5w3eFiSdOjJYsbtWfd4s5L5C4ogyuVpdKIVHeW0vV1MloM65/f7W45nR9ZxwVdyiA==}
-    engines: {node: '>=14.0'}
-    dependencies:
-      busboy: 1.6.0
     dev: false
 
   /untildify@4.0.0:

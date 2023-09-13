@@ -1,6 +1,6 @@
 {
-  "name": "vercel-blob",
-  "repository": "https://github.com/vercel/examples.git",
+  "name": "img-to-ascii",
+  "repository": "https://github.com/BrooklynWelsh/img-to-ascii",
   "license": "MIT",
   "version": "1.0.0",
   "private": true,
@@ -14,7 +14,6 @@
     "@types/node": "18.15.11",
     "@types/react": "18.0.37",
     "@types/react-dom": "18.0.11",
-    "@vercel/blob": "^0.8.3",
     "autoprefixer": "10.4.14",
     "cross-env": "^7.0.3",
     "eslint": "8.38.0",

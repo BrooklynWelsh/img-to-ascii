@@ -5,7 +5,7 @@ export default function Source () {
     return (
         <div className="w-[100%] px-20 pb-10 flex justify-center  mt-32 ">
             <Link
-                href="https://github.com/vercel/examples/tree/main/storage/blob-starter"
+                href="https://github.com/BrooklynWelsh/img-to-ascii"
                 className="flex items-center space-x-2"
             >
                 <Image
