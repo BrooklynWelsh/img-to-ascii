@@ -1,10 +1,4 @@
-import {red, green, blue, charWidth} from './Sliders'
-
-const maxWidth = 1920
-const maxHeight = 1080
-
-console.log('started work')
-
+export {}
 class Cell {
   x
   y
@@ -19,12 +13,12 @@ class Cell {
     this.fontSize = fontSize
   }
 
-  draw (ctx: OffscreenCanvasRenderingContext2D) {
+  draw (ctx: OffscreenCanvasRenderingContext2D, bgColor: string) {
     // Shadows apparently cause long processing times in Firefox, so draw same font twice, but slightly offset to fake a shadow on each character
     ctx.font = `${this.fontSize * 1.2}px Verdana`
 
-    // TODO: When dark mode is added, detect what color shadow to use
-    ctx.fillStyle = 'black'
+    
+    bgColor === 'white' ? ctx.fillStyle = 'black' : ctx.fillStyle = 'white' // Change shadow color depending on chosen background
     ctx.fillText(this.symbol, this.x + 0.5, this.y + 0.5)
     ctx.fillStyle = this.color
     ctx.fillText(this.symbol, this.x, this.y)
@@ -42,8 +36,14 @@ self.addEventListener('message', function(e) {
   const canvas: OffscreenCanvas = new OffscreenCanvas(imageWidth, imageHeight)
   const ctx = canvas.getContext('2d')! as OffscreenCanvasRenderingContext2D
   const cellSize = e.data.cellSize
-  console.log(canvas)
-  console.log(canvas.width)
+  const scale = e.data.scale
+  const bgColor = e.data.bgColor
+
+  canvas.width = imageWidth * scale.x
+  canvas.height = imageHeight * scale.y
+
+  ctx.fillStyle = bgColor
+  ctx.fillRect(0, 0, canvas.width, canvas.height)
 
   const newImageArray = []
   for (let y = 0; y < imageHeight; y += cellSize) {
@@ -64,45 +64,25 @@ self.addEventListener('message', function(e) {
       }
     }
   }
-  console.log(newImageArray)
-  console.log('finished')
+
+  ctx.scale(scale.x,scale.y)
   drawAscii(ctx, newImageArray)
-  const asciiImageData = ctx.getImageData(0, 0, imageWidth, imageHeight)
+  const asciiImageData = ctx.getImageData(0, 0, imageWidth * scale.x, imageHeight * scale.y)
+
+  // @ts-ignore - convertToBlob not in TS definition although it does exist for OffscreenCanvas
   canvas.convertToBlob().then((blob: Blob) => { 
     console.log(blob)
     const blobUrl = URL.createObjectURL(blob)
     this.postMessage({blobUrl, asciiImageData})
   })
-  // const ascii = canvas.transferToImageBitmap()
-  // this.postMessage({ascii}, [ascii])
 }, false)
 
 function drawAscii(ctx: OffscreenCanvasRenderingContext2D, newImageArray: Cell[]) {
+  const bgColor = ctx.fillStyle as string // Get last used fill style to determine background color
   for (const cell of newImageArray) {
-    cell.draw(ctx)
+    cell.draw(ctx, bgColor)
   }
 }
-
-function draw(cellSize) {
-
-}
-
-const _reduceDimension = (width, height, maxWidth, maxHeight) => {
-
-  if (width > maxWidth) {
-      //Calculating new height using maximum width as the width
-      height = Math.floor((height * maxWidth) / width);
-      width = maxWidth;
-  }
-  if (height > maxHeight) {
-      //Calculating new width using  maximum height and height
-      width = Math.floor((width * maxHeight) / height);
-      height = maxHeight;
-  }
-
-  return [width, height];
-}
-
 const asciiIntensityArray = ["$", "@", "B", "%", "8", "&", "W", "M", "#", "*", "o", "a", "h", "k", "b", "d", "p", "q", "w", "m", "Z", "O", "0", "Q", "L", "C", "J", "U", "Y", "X", "z", "c", "v", "u", "n", "x", "r", "j", "f", "t", "/", "|", "(", ")", "1", "{", "}", "[", "]", "?", "-", "_", "+", "~", "<", ">", "i", "!", "l", "I", ";", ":", ",", '"', "^", "`", "'", ".", " "];
 
 function convertToChar(averageColorValue: number) {

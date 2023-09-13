@@ -1,9 +1,8 @@
 'use client'
 
-import { useState, useCallback, useMemo, ChangeEvent } from 'react'
+import { useState, ChangeEvent } from 'react'
 import toast from 'react-hot-toast'
 import LoadingDots from './loading-dots'
-import {red, green, blue, charWidth} from './Sliders'
 
 export default function Uploader({saving, fileLink, disableButton, updateFileLink}: {saving: boolean, fileLink: string | undefined, disableButton: Function, updateFileLink: Function}) {
   const [data, setData] = useState<{
@@ -15,7 +14,7 @@ export default function Uploader({saving, fileLink, disableButton, updateFileLin
 
   const [dragActive, setDragActive] = useState(false)
 
-  const onChangePicture = useCallback(
+  const onChangePicture = 
     (event: ChangeEvent<HTMLInputElement>) => {
       disableButton(true)
       const file = event.currentTarget.files && event.currentTarget.files[0]
@@ -47,18 +46,19 @@ export default function Uploader({saving, fileLink, disableButton, updateFileLin
                 memCanvas.height = img.height
                 ctx.drawImage(img, 0, 0, img.width, img.height, 0, 0, memCanvas.width, memCanvas.height)
                 const imageData = ctx.getImageData(0, 0, img.width, img.height)
-                const canvasParent = canvas.parentElement?.getBoundingClientRect()!
                 
                 // Step through image data 4 spots at a time to edit each r,g,b,a set
                 const webWorker = new Worker(new URL('./convert-image.ts', import.meta.url))
                 const resolutionSlider = document.getElementById('resolution')! as HTMLInputElement
-                webWorker.postMessage({imageData, cellSize: parseInt(resolutionSlider.value)})
-                console.log('started worker')
+                const yScaleSlider = document.getElementById('y-scale')! as HTMLInputElement
+                const xScaleSlider = document.getElementById('x-scale')! as HTMLInputElement
+                const bgColor = (document.getElementById('background-color')! as HTMLSelectElement).value
+
+                webWorker.postMessage({imageData, cellSize: parseInt(resolutionSlider.value), scale: {x: parseInt(xScaleSlider.value), y: parseInt(yScaleSlider.value)}, bgColor})
 
                 webWorker.onmessage = function(e) {
                   const blobUrl = e.data.blobUrl
                   console.log(blobUrl)
-                  const downloadButton = document.getElementById('download')
                   const asciiImageData = e.data.asciiImageData
                   
                   // Now draw to preview canvas
@@ -82,9 +82,8 @@ export default function Uploader({saving, fileLink, disableButton, updateFileLin
           reader.readAsArrayBuffer(file)
         }
       }
-    },
-    [setData]
-  )
+    }
+  
 
   return (
     <>

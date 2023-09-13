@@ -6,7 +6,7 @@ import { useState } from 'react'
 
 export default function Home() {
   const [saving, setSaving] = useState(false)
-  const [fileLink, setLink] = useState(undefined)
+  const [fileLink, setLink] = useState<string | undefined>(undefined)
 
   
   return (
@@ -20,7 +20,7 @@ export default function Home() {
         </h1>
         <div className="space-y-1 mb-4 text-center">
           <h2 className="text-xl font-semibold">Click canvas to upload a file.</h2>
-          <h3 className="text-lg font-medium">Images in canvas are previews, download link will keep original file dimensions.</h3>
+          <h3 className="text-lg font-medium">Images in canvas are previews, download link will keep original file dimensions (or scale up with slider values).</h3>
           <p className="text-sm text-gray-500">
             Accepted formats: .png, .jpg
           </p>

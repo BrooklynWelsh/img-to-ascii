@@ -7,12 +7,6 @@ import Image from "next/image"
 import { ChangeEvent, useMemo, useState } from "react"
 import LoadingDots from './loading-dots'
 
-export const charWidth = 8
-export const charHeight = 8
-export const red = 255
-export const green = 255
-export const blue = 255
-
 export default function Sliders({saving, fileLink}: {saving: boolean, fileLink: string | undefined}) {
     const [currentRes, setRes] = useState<string>('5 px')
     const handleResChange = (e: ChangeEvent) => {
@@ -22,6 +16,23 @@ export default function Sliders({saving, fileLink}: {saving: boolean, fileLink: 
             else setRes(`${target.value} px`)
         }
     }
+
+    const [xScale, setXScale] = useState<number>(1)
+    const handleXScaleChange = (e: ChangeEvent) => {
+        const target = e.target as HTMLInputElement
+        if (target) {
+            setXScale(parseFloat(target.value))
+        }
+    }
+
+    const [yScale, setYScale] = useState<number>(1)
+    const handleYScaleChange = (e: ChangeEvent) => {
+        const target = e.target as HTMLInputElement
+        if (target) {
+            setYScale(parseFloat(target.value))
+        }
+    }
+
     const saveDisabled = useMemo(() => {
         return !fileLink
       }, [fileLink])
@@ -30,8 +41,21 @@ export default function Sliders({saving, fileLink}: {saving: boolean, fileLink: 
         <section className="w-80 flex flex-col self-start text-center h-screen">
             <h2 className="text-2xl md:text-3xl mb-4 mt-12">Image Controls</h2>
             <hr className="block border-black mb-24"/>
-            <label htmlFor='resolution' id='resolutionLabel'>Resolution: {currentRes}</label>
-            <input onChange={(e) => handleResChange(e)} type="range" id='resolution' name='resolution' min='1' max='50' defaultValue='5' />
+            <label htmlFor='resolution' id='resolutionLabel'>Resolution (Font size): {currentRes}</label>
+            <input onChange={(e) => handleResChange(e)} className="mb-4" type="range" id='resolution' name='resolution' min='1' max='50' defaultValue='5' />
+
+            <label htmlFor='x-scale' id='x-scale-label'>Scale (X): {xScale}</label>
+            <input onChange={(e) => handleXScaleChange(e)} className="mb-4" type="range" id='x-scale' name='x-scale' min='1' max='10' defaultValue='1.0' step="0.1" />
+
+            <label htmlFor='y-scale' id='y-scale-label'>Scale (Y): {yScale}</label>
+            <input onChange={(e) => handleYScaleChange(e)} className="mb-4" type="range" id='y-scale' name='y-scale' min='1' max='10' defaultValue='1.0' step="0.1" />
+
+            <label htmlFor='background-color' id='background-color-label'>Background Color:</label>
+            <select id='background-color' name='background-color' className="text-center">
+                <option value="white">White</option>
+                <option value="black">Black</option>
+            </select>
+
 
             <button
                 form='downloadLinkForm'
