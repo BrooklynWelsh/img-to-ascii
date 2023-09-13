@@ -2,8 +2,7 @@
  * Contains sliders that control different options for the ASCII generation
  */
 'use client'
-import Link from "next/link"
-import Image from "next/image"
+import Source from "./Source"
 import { ChangeEvent, useMemo, useState } from "react"
 import LoadingDots from './loading-dots'
 import Help from "./Help"
@@ -39,8 +38,8 @@ export default function Sliders({saving, fileLink}: {saving: boolean, fileLink: 
       }, [fileLink])
 
     return (
-        <section className="w-80 flex flex-col self-start text-center h-screen">
-            <h2 className="text-2xl md:text-3xl mb-4 mt-12">Image Controls</h2>
+        <section className="relative md:static top-10 w-[90%] md:h-screen md:w-80 flex shrink-1 flex-col self-start text-center ">
+            <h2 className="text-2xl md:text-3xl mb-4 md:mt-12">Image Controls</h2>
             <hr className="block border-black mb-4"/>
 
             <Help/>
@@ -68,7 +67,7 @@ export default function Sliders({saving, fileLink}: {saving: boolean, fileLink: 
                 saveDisabled
                     ? 'cursor-not-allowed border-gray-200 bg-gray-100 text-gray-400'
                     : 'border-black bg-black text-white hover:bg-white hover:text-black'
-                } flex h-10 items-center justify-center rounded-md border text-sm transition-all focus:outline-none mt-32 mx-4`}
+                } flex h-10 items-center justify-center rounded-md border text-sm transition-all focus:outline-none mt-8 md:mt-32 mx-4`}
             >
                 {saving ? (
                 <LoadingDots color="#808080" />
@@ -76,22 +75,9 @@ export default function Sliders({saving, fileLink}: {saving: boolean, fileLink: 
                 <p className="text-sm">View/Download full image</p>
                 )}
             </button>
+            <div className='hidden md:block'><Source/></div>
             
-            <div className="w-[100%] px-20 pb-10 flex justify-between place-self-end mt-auto ">
-                <Link
-                    href="https://github.com/vercel/examples/tree/main/storage/blob-starter"
-                    className="flex items-center space-x-2"
-                >
-                    <Image
-                    src="/github.svg"
-                    alt="GitHub Logo"
-                    width={24}
-                    height={24}
-                    priority
-                    />
-                    <p className="font-light">Source</p>
-                </Link>
-            </div>
+            
         </section>
     )
 }
