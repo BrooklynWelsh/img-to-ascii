@@ -31,7 +31,7 @@ export default function Sliders({saving, fileLink}: {saving: boolean, fileLink: 
             <h2 className="text-2xl md:text-3xl mb-4 mt-12">Image Controls</h2>
             <hr className="block border-black mb-24"/>
             <label htmlFor='resolution' id='resolutionLabel'>Resolution: {currentRes}</label>
-            <input onChange={(e) => handleResChange(e)} type="range" id='resolution' name='resolution' min='1' max='25' defaultValue='5' />
+            <input onChange={(e) => handleResChange(e)} type="range" id='resolution' name='resolution' min='1' max='50' defaultValue='5' />
 
             <button
                 form='downloadLinkForm'
