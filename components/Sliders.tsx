@@ -6,6 +6,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { ChangeEvent, useMemo, useState } from "react"
 import LoadingDots from './loading-dots'
+import Help from "./Help"
 
 export default function Sliders({saving, fileLink}: {saving: boolean, fileLink: string | undefined}) {
     const [currentRes, setRes] = useState<string>('5 px')
@@ -40,7 +41,10 @@ export default function Sliders({saving, fileLink}: {saving: boolean, fileLink: 
     return (
         <section className="w-80 flex flex-col self-start text-center h-screen">
             <h2 className="text-2xl md:text-3xl mb-4 mt-12">Image Controls</h2>
-            <hr className="block border-black mb-24"/>
+            <hr className="block border-black mb-4"/>
+
+            <Help/>
+
             <label htmlFor='resolution' id='resolutionLabel'>Resolution (Font size): {currentRes}</label>
             <input onChange={(e) => handleResChange(e)} className="mb-4" type="range" id='resolution' name='resolution' min='1' max='50' defaultValue='5' />
 
