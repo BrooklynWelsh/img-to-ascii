@@ -3,9 +3,8 @@
 import { useState, useCallback, useMemo, ChangeEvent } from 'react'
 import toast from 'react-hot-toast'
 import {red, green, blue, charWidth} from './Sliders'
-import LoadingDots from './loading-dots'
 
-export default function Uploader() {
+export default function Uploader({saving, fileLink, disableButton, updateFileLink}: {saving: boolean, fileLink: string, disableButton: Function, updateFileLink: Function}) {
   const [data, setData] = useState<{
     image: string | null
   }>({
@@ -15,12 +14,9 @@ export default function Uploader() {
 
   const [dragActive, setDragActive] = useState(false)
 
-  const [saving, setSaving] = useState(false)
-  const [fileLink, setLink] = useState(undefined)
-
   const onChangePicture = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
-      setSaving(true)
+      disableButton(true)
       const file = event.currentTarget.files && event.currentTarget.files[0]
       if (file) {
         if (file.size / 1024 / 1024 > 50) {
@@ -71,8 +67,8 @@ export default function Uploader() {
                       canvas.width = asciiBitmap.width
                       onscreenCtx.drawImage(asciiBitmap, 0, 0, canvas.width, canvas.height)
                       console.log('draw done')
-                      setLink(blobUrl)
-                      setSaving(false)
+                      updateFileLink(blobUrl)
+                      disableButton(false)
                     })
                 }
               }
@@ -89,20 +85,17 @@ export default function Uploader() {
     [setData]
   )
 
-  const saveDisabled = useMemo(() => {
-    return !data.image || saving
-  }, [data.image, saving])
-
   return (
     <>
     <form
+      id='downloadLinkForm'
       className="grid gap-24 h-[100%]"
       method='GET'
       target="_blank"
       action={fileLink}
       onSubmit={async (e) => {
         window.open(fileLink)
-        setSaving(false)
+        disableButton(false)
       }}
     >
       <div className="h-[70vh] text-center">
@@ -153,11 +146,9 @@ export default function Uploader() {
           <div
             className={`${
               dragActive ? 'border-2 border-black' : ''
-            } absolute z-[3] flex h-full w-full flex-col items-center justify-center rounded-md px-10 transition-all ${
-              data.image
-                ? 'bg-white/80 opacity-0 hover:opacity-100 hover:backdrop-blur-md'
-                : 'bg-white opacity-100 hover:bg-gray-50'
-            }`}
+            } absolute z-[3] flex h-full w-full flex-col items-center justify-center rounded-md px-10 transition-all 
+                'bg-white opacity-100 hover:bg-gray-50'
+            `}
           >
             <svg
               className={`${
@@ -198,21 +189,6 @@ export default function Uploader() {
           />
         </div>
       </div>
-
-      <button
-        disabled={saveDisabled}
-        className={`${
-          saveDisabled
-            ? 'cursor-not-allowed border-gray-200 bg-gray-100 text-gray-400'
-            : 'border-black bg-black text-white hover:bg-white hover:text-black'
-        } flex h-10 w-full items-center justify-center rounded-md border text-sm transition-all focus:outline-none`}
-      >
-        {saving ? (
-          <LoadingDots color="#808080" />
-        ) : (
-          <p className="text-sm">View/Download full image</p>
-        )}
-      </button>
     </form>
     </>
   )
