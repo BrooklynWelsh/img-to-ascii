@@ -7,7 +7,7 @@ Next.js/TailwindCSS site that takes in an image and converts it to ASCII.
 This repo comes with a pnpm-lock.yaml file, so if you don't have `pnpm` installed follow the installation instructions for your system [here](https://pnpm.io/installation)
 
 Then:
-- `pnpm ci`
+- `pnpm i`
 - `pnpm run start`
 
 If you just want to use `npm`, you can ignore the pnpm file and instead:

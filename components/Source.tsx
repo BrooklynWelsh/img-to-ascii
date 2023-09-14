@@ -9,7 +9,7 @@ export default function Source () {
                 className="flex items-center space-x-2"
             >
                 <Image
-                src="/github.svg"
+                src="/img-to-ascii/github.svg"
                 alt="GitHub Logo"
                 width={24}
                 height={24}
