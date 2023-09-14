@@ -11,16 +11,15 @@ export default function Home() {
   const [fileLink, setLink] = useState<string | undefined>(undefined)
   const [hidden, setHidden] = useState(true)
 
-  const [width, setWidth] = React.useState(window.innerWidth)
+  const [width, setWidth] = React.useState(0)
 
   React.useEffect(() => {
-    if (window) {
-      const handleWindowResize = () => setWidth(window.innerWidth)
-      window.addEventListener("resize", handleWindowResize)
+    setWidth(window.innerWidth)
+    const handleWindowResize = () => setWidth(window.innerWidth)
+    window.addEventListener("resize", handleWindowResize)
 
-      // Return a function from the effect that removes the event listener
-      return () => window.removeEventListener("resize", handleWindowResize)
-    }
+    // Return a function from the effect that removes the event listener
+    return () => window.removeEventListener("resize", handleWindowResize)
   }, []);
 
   const toggleMenu = (e: React.MouseEvent) => {
@@ -30,7 +29,7 @@ export default function Home() {
   return (
     <main>
       
-      {width < 768 ? 
+      {width < 768 && width !== 0 ? 
       <div className="">
       <button id="navbar-burger" className="flex items-center text-blue-600 pl-3 pt-4" onClick={(e: React.MouseEvent<HTMLElement>) => {toggleMenu(e)}}>
         <svg className="pointer-events-none block h-4 w-4 fill-current" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -67,7 +66,7 @@ export default function Home() {
           <Uploader saving={saving} fileLink={fileLink} disableButton={(disable: boolean) => setSaving(disable)} updateFileLink={(newLink: string) => setLink(newLink)}/>
         </div>
       </section>
-      { width < 768 ?
+      { width < 768 && width !== 0 ?
       
       <div id="navbar" className={`${hidden ? 'hidden' : ''} md:hidden relative`}>
         <nav className="fixed top-0 left-0 bottom-0 flex flex-col w-5/6 max-w-sm py-6 px-6 bg-white border-r overflow-y-auto">
